@@ -1,0 +1,58 @@
+version: '3'
+services:
+  moodle:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '0:80'
+    volumes:
+      - './moodle:/var/www/html/moodle'
+      - './moodledata:/var/www/html/moodledata'
+    environment:
+      MOODLE_DB_TYPE: pgsql
+      MOODLE_DB_HOST: db
+      MOODLE_DB_PORT: 5432
+      MOODLE_DB_USER: moodle
+      MOODLE_DB_PASSWORD: moodlepass
+      MOODLE_DB_NAME: moodledb
+    depends_on:
+      - db
+    deploy:
+      replicas: 4   # Increase to your desired number of replicas
+      restart_policy:
+        condition: on-failure
+  db:
+    image: postgres:17
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_DB: moodledb
+      POSTGRES_USER: moodle
+      POSTGRES_PASSWORD: moodlepass
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+  redis:
+    image: 'redis:alpine'
+    restart: always
+    ports:
+        - '6379:6379'
+    volumes:
+        - 'sail-redis:/data'
+    healthcheck:
+        test:
+            - CMD
+            - redis-cli
+            - ping
+        retries: 3
+        timeout: 5s
+volumes:
+  moodle:
+    driver: local
+  moodledata:
+    driver: local
+  dbdata:
+    driver: local
+  sail-redis:
+      driver: local
