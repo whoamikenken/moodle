@@ -1,10 +1,7 @@
 FROM php:8.2-apache
 
 ENV MOODLE_VERSION=5.0 \
-    MOODLE_DIR=/var/www/html
-
-# Copy Moodle source code
-COPY moodle ${MOODLE_DIR}
+    MOODLE_DIR=/var/www/html/moodle
 
 # Install dependencies and PHP extensions
 RUN apt-get update && apt-get install -y \
@@ -35,16 +32,20 @@ COPY php.ini /usr/local/etc/php/conf.d/custom.ini
 
 EXPOSE 80
 
+# Copy Moodle source code
+COPY moodle ${MOODLE_DIR}
+
+
 WORKDIR ${MOODLE_DIR}
 
 CMD ["apache2-foreground"]
 
 
-# docker build -f Dockerfile.prod -t moodle-umak-lts:v5.0.1 .
+# docker build -f Dockerfile.prod -t moodle-umak-lts:v5.0.1-2 .
 # docker tag moodle-umak-lts:5.0.1 whoamiken/moodle-umak-lts:5.0.1
 # docker push whoamiken/moodle-umak-lts:5.0.1
 
 
-# docker tag moodle-umak-lts:v5.0.1 swr.ap-southeast-3.myhuaweicloud.com/container-pti/moodle-umak-lts:v5.0.1
+# docker tag moodle-umak-lts:v5.0.1-2 swr.ap-southeast-3.myhuaweicloud.com/container-pti/moodle-umak-lts:v5.0.1-2
 
-# docker push swr.ap-southeast-3.myhuaweicloud.com/container-pti/moodle-umak-lts:v5.0.1
+# docker push swr.ap-southeast-3.myhuaweicloud.com/container-pti/moodle-umak-lts:v5.0.1-2
